@@ -2,8 +2,10 @@ import cv2
 
 
 class crop:
-    def run(idx, img, file_name):
+    def run(idx, img, file_name, _input):
         print("   -> Crop")
-        crop_img = img[100:600, 200:700].copy()
+        print(_input)
+        crop_img = img[int(_input['y1']):int(_input['y2']),
+                       int(_input['x1']):int(_input['x2'])].copy()
 
         return crop_img
