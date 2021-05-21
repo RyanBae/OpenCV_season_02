@@ -19,15 +19,8 @@ Show - s
 
 
 class modules:
-    # def __init__(self, type, idx, img, file_name):
-    #     self.get_process(type, idx, img, file_name)
-
     def get_process(type, idx, img, file_name, _input, img_list):
         print("Process ====== > ")
-        # print("_input : "+_input)
-        # print("===> _input")
-        # print(_input)
-        print(img_list)
 
         if type == 's':
             return show.run(idx, img, file_name)
@@ -49,11 +42,11 @@ class modules:
 
         elif type == 'm':
             # print("Merge")
-            return merge.run(idx, img, file_name, _input[type])
+            return merge.run(idx, img, file_name, _input, type)
 
         elif type == 'v':
             # print("Stack")
-            return stack.run(idx, img, file_name, _input[type])
+            return stack.run(idx, img, file_name, _input, img_list, type)
 
         elif type == 'h':
-            return stack.run(idx, img, file_name, _input[type])
+            return stack.run(idx, img, file_name, _input, img_list, type)

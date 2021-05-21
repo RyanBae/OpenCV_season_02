@@ -3,12 +3,14 @@ import os
 import glob
 import argparse
 import cv2
+import datetime
 from pathlib import Path
 
 from module.modules import modules
 
 
 # python3 cv_run.py --img_dir=./image --mode=s,r --result_dir=test
+# python3 cv_run.py --img_dir=./image --mode=r,s --result_dir=test
 
 parser = argparse.ArgumentParser(description="Please enter your argument.")
 parser.add_argument('--img_dir', required=True,
@@ -50,9 +52,6 @@ class cv_run():
         print('[IMG_DIR_PATH] : '+IMG_DIR_PATH+' , [RESULT_DIR_PATH] : ' +
               RESULT_DIR_PATH+' , [MODE_LIST] : '+str(MODE_LIST)+"\n")
 
-        # if 'm' in MODE_LIST:
-        #     print("m !!!!")
-
         for mode in MODE_LIST:
             self.mode_input_data(mode)
 
@@ -72,66 +71,61 @@ class cv_run():
         # 2.입력된 mode 별 이미지 편집
         if len(img_file_list) != 0:
             for idx in range(0, len(img_file_list)):
-                print("[Process] idx : {} , File Name : {}".format(
-                    idx, img_file_list[idx]))
                 get_img = cv2.imread(
                     IMG_DIR_PATH+'/'+img_file_list[idx], cv2.IMREAD_ANYCOLOR)
-
                 if type(get_img) is not type(None):
-                    for mode in MODE_LIST:
-                        get_img = modules.get_process(
-                            mode, idx, get_img, str(img_file_list[idx]), _input, CONVERSION_IMG_LIST)
-
+                    CONVERSION_IMG_LIST.update(
+                        {idx: {'id': idx, 'img': get_img, 'back_img': get_img, 'name': img_file_list[idx]}})
                 else:
-                    print("[Image Mode Process] Not Image Type!")
+                    print("[Image Save Fun] Not Image Type!")
 
-                CONVERSION_IMG_LIST.update({idx: {'id': idx, 'img': get_img}})
+        CONVERSION_IMG_LIST2 = {}
 
+        if 'm' in MODE_LIST:
+            if 'g' in MODE_LIST:
+                MODE_LIST.remove('m')
+                MODE_LIST.insert((MODE_LIST.index('g')), 'm')
+
+        if len(MODE_LIST) != 0:
+            for mode in MODE_LIST:
+                # for idx in range(0, len(CONVERSION_IMG_LIST)):
+                for idx in CONVERSION_IMG_LIST.keys():
+                    if idx in CONVERSION_IMG_LIST:
+                        get_img = modules.get_process(
+                            mode, idx, CONVERSION_IMG_LIST[idx]['img'], CONVERSION_IMG_LIST[idx]['name'], _input, CONVERSION_IMG_LIST2)
+                        CONVERSION_IMG_LIST[idx]['img'] = get_img
+                        if mode != 'v' and mode != 'h':
+                            CONVERSION_IMG_LIST[idx]['back_img'] = get_img
+
+                CONVERSION_IMG_LIST2 = CONVERSION_IMG_LIST
+
+        if len(MODE_LIST) != 0:
             # 편집된 이미지 저장
-            # if type(get_img) is not type(None):
-            #     self.save_img(MODE_LIST, idx, get_img, str(
-            #         img_file_list[idx]), RESULT_DIR_PATH)
-            # else:
-            #     print("[Image Save Fun] Not Image Type!")
+            # for idx in range(0, len(CONVERSION_IMG_LIST)):
+            for idx in CONVERSION_IMG_LIST.keys():
+                self.save_img(
+                    MODE_LIST, idx, CONVERSION_IMG_LIST[idx]['img'], CONVERSION_IMG_LIST[idx]['name'], RESULT_DIR_PATH)
 
-        # if len(MODE_LIST) != 0:
-        #     for mode in MODE_LIST:
-        #         if len(img_file_list) != 0:
-        #             for idx in range(0, len(img_file_list)):
-        #                 get_img = cv2.imread(
-        #                     IMG_DIR_PATH+'/'+img_file_list[idx], cv2.IMREAD_ANYCOLOR)
-
-        #                 if type(get_img) is not type(None):
-        #                     get_img = modules.get_process(mode, idx, get_img, str(
-        #                         img_file_list[idx]), _input, CONVERSION_IMG_LIST)
-        #                         # key 값으로 있으면
-        #                     CONVERSION_IMG_LIST.update(
-        #                         {idx: {'id': idx, 'img': get_img}})
-        #                 else:
-        #                     print("[Image Mode Process] Not Image Type!")
-
-        # print(CONVERSION_IMG_LIST)
-        # cv2.imshow(
-        #     "img_"+str(CONVERSION_IMG_LIST[8]), CONVERSION_IMG_LIST[8]['img'])
         if 's' in MODE_LIST:
             k = cv2.waitKey(0)
             if k == 27:
                 cv2.destoryAllWindows()
         else:
-            k = cv2.waitKey(0)
-            if k == 27:
-                cv2.destoryAllWindows()
+            exit()
 
     def save_img(self, mode, idx, img, file_name, floder):
-        print("Save Image ==>")
-        print("[Process2] idx : {} , File Name : {} , Mode :{} , img : {}".format(
-            idx, file_name, ','.join(mode), img))
+        print("Save Image ==>"+file_name)
+        # print("[Process2] idx : {} , File Name : {} , Mode :{} , img : {}".format(
+        #     idx, file_name, ','.join(mode), img))
 
         if os.path.isdir(floder) == False:
             os.mkdir(floder)
+        now = datetime.datetime.now()
+        nowDate = str(now.year)+'-'+str(now.month)+'-' + \
+            str(now.day)+' '+str(now.hour)+':'+str(now.minute)
 
         cv2.imwrite(floder+'/'+str(idx)+'_' +
-                    ("".join(mode))+'_'+file_name, img)
+                    ("".join(mode))+'_'+str(nowDate)+'_'+file_name, img)
 
     def mode_input_data(self, mode):
         # Show
@@ -214,7 +208,7 @@ class cv_run():
             print("Merge")
 
         # VStack
-        elif mode == 'v' or mode == 'h':
+        elif mode == 'v':
             print("VStack")
             # check = input(" V Stack = 0 , H Stack = 1 방향을 선택해주세요. \n ")
             # self.mode_input_data('r')

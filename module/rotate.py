@@ -4,7 +4,7 @@ import cv2
 class rotate:
     def run(idx, img, file_name, _input):
         print("     -> Rotate")
-        print(_input)
+        # print(_input)
 
         if _input['type'] == '0':
             height, width, channel = img.shape
