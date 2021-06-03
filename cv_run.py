@@ -86,6 +86,8 @@ class cv_run():
                 MODE_LIST.remove('m')
                 MODE_LIST.insert((MODE_LIST.index('g')), 'm')
 
+        print(MODE_LIST)
+
         if len(MODE_LIST) != 0:
             for mode in MODE_LIST:
                 # for idx in range(0, len(CONVERSION_IMG_LIST)):

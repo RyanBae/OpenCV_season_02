@@ -4,7 +4,7 @@ import numpy as np
 
 class stack:
     def run(idx, img, file_name, _input, img_list, type):
-        width, height = img.shape
+        height, width = img.shape
         print("????")
         stack_img = img
 
@@ -13,7 +13,7 @@ class stack:
                 if 'r' not in _input:
                     print("ReSize Mode Not Found")
                     resize_img = cv2.resize(img_list[i]['back_img'], dsize=(
-                        height, width), interpolation=cv2.INTER_AREA)
+                        width, height), interpolation=cv2.INTER_AREA)
                 else:
                     resize_img = img_list[i]['back_img']
 

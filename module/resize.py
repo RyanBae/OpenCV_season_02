@@ -7,8 +7,14 @@ class resize:
         print(_input)
 
         if _input['type'] == '0':
-            resize_img = cv2.resize(img, dsize=(
-                int(_input['x']), int(_input['y'])), interpolation=cv2.INTER_AREA)
+            height, width, channel = img.shape
+            print(" height : "+str(height)+" , "+_input['y'])
+            print(" height : "+str(width)+" , "+_input['x'])
+            if int(height) >= int(_input['y']) or int(width) >= int(_input['x']):
+                resize_img = cv2.resize(img, dsize=(
+                    int(_input['x']), int(_input['y'])), interpolation=cv2.INTER_AREA)
+            else:
+                print("[***]Image Size Error !")
         else:
             resize_img = cv2.resize(img, dsize=(
                 0, 0), fx=float(_input['y']), fy=float(_input['y']), interpolation=cv2.INTER_LINEAR)
